@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Channel {
+  id           String   @id @default(cuid())
+  channelId    String?  @unique
+  canonicalKey String   @unique
+  name         String
+  canonicalUrl String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  videos       Video[]
+
+  @@index([name])
+}
+
+model Video {
+  id              String      @id @default(cuid())
+  videoId         String?     @unique
+  url             String
+  title           String
+  channelId       String?
+  channelName     String
+  durationSeconds Int?
+  publishedAt     DateTime?
+  thumbnailUrl    String?
+  rawMetadataJson Json?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  channel         Channel?    @relation(fields: [channelId], references: [id])
+  watchEvents     WatchEvent[]
+
+  @@index([title])
+  @@index([channelName])
+}
+
+model ImportBatch {
+  id             String      @id @default(cuid())
+  sourceName     String
+  importedAt     DateTime    @default(now())
+  recordCount    Int
+  validCount     Int
+  invalidCount   Int
+  duplicateCount Int
+  notes          String?
+  watchEvents    WatchEvent[]
+}
+
+model WatchEvent {
+  id              String      @id @default(cuid())
+  sourceEventHash String      @unique
+  videoId         String
+  watchedAt       DateTime
+  watchedDate     DateTime
+  watchedHour     Int
+  watchedWeekday  Int
+  importBatchId   String?
+  rawEventJson    Json?
+  createdAt       DateTime    @default(now())
+  video           Video       @relation(fields: [videoId], references: [id])
+  importBatch     ImportBatch? @relation(fields: [importBatchId], references: [id])
+  tags            EventTag[]
+  notes           Note[]
+  favorite        Favorite?
+
+  @@index([watchedAt])
+  @@index([watchedDate])
+  @@index([watchedHour])
+  @@index([watchedWeekday])
+  @@index([videoId])
+}
+
+model Tag {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  events    EventTag[]
+}
+
+model EventTag {
+  watchEventId String
+  tagId        String
+  watchEvent   WatchEvent @relation(fields: [watchEventId], references: [id], onDelete: Cascade)
+  tag          Tag        @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([watchEventId, tagId])
+}
+
+model Note {
+  id           String     @id @default(cuid())
+  watchEventId String?
+  noteDate     DateTime?
+  content      String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  watchEvent   WatchEvent? @relation(fields: [watchEventId], references: [id], onDelete: Cascade)
+
+  @@index([noteDate])
+}
+
+model Favorite {
+  id           String    @id @default(cuid())
+  watchEventId String    @unique
+  createdAt    DateTime  @default(now())
+  watchEvent   WatchEvent @relation(fields: [watchEventId], references: [id], onDelete: Cascade)
+}
+
+model SavedFilter {
+  id         String   @id @default(cuid())
+  name       String
+  filterJson Json
+  createdAt  DateTime @default(now())
+}
