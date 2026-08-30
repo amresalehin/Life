@@ -1,5 +1,7 @@
 import crypto from "node:crypto";
+import JSZip from "jszip";
 import { Prisma } from "@prisma/client";
+import { load } from "cheerio";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import type { ImportPreviewResult, WatchCard } from "@/lib/types";
@@ -19,6 +21,20 @@ const rawEntrySchema = z
     subtitles: z.array(subtitleSchema).optional(),
   })
   .passthrough();
+
+const importFileSchema = z.object({
+  fileName: z.string().min(1),
+  mimeType: z.string().optional(),
+  contentBase64: z.string().min(1),
+});
+
+const importEnvelopeSchema = z
+  .object({
+    data: z.unknown().optional(),
+    file: importFileSchema.optional(),
+    sourceName: z.string().optional(),
+  })
+  .partial();
 
 export type NormalizedWatchEvent = {
   sourceEventHash: string;
@@ -70,6 +86,154 @@ const dayFloor = (date: Date) => {
 
 const hashEvent = (parts: string[]) =>
   crypto.createHash("sha256").update(parts.join("|")).digest("hex");
+
+function parseFirstDate(text: string): Date | undefined {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  const patterns = [
+    /\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\b/,
+    /\b[A-Z][a-z]{2}\s+\d{1,2},\s+\d{4},\s+\d{1,2}:\d{2}:\d{2}\s+[AP]M(?:\s+[A-Z]{2,4})?\b/,
+    /\b[A-Z][a-z]+\s+\d{1,2},\s+\d{4}\s+at\s+\d{1,2}:\d{2}\s+[AP]M\b/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = normalized.match(pattern);
+    if (!match?.[0]) continue;
+    const parsed = new Date(match[0]);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+
+  const tokens = normalized
+    .split(/[\n|]/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+  for (const token of tokens) {
+    const parsed = new Date(token);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+
+  return undefined;
+}
+
+function decodeHtmlEntities(input: string) {
+  return input
+    .replaceAll("&amp;", "&")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">");
+}
+
+function htmlToWatchHistoryEntries(html: string) {
+  const $ = load(html);
+  const rows: Array<Record<string, unknown>> = [];
+
+  $("a[href*='youtube.com/watch'], a[href*='youtu.be/'], a[href*='youtube.com/shorts/']").each((_, el) => {
+    const videoAnchor = $(el);
+    const titleUrl = videoAnchor.attr("href")?.trim();
+    const titleText = videoAnchor.text().trim();
+    if (!titleUrl || !titleText) return;
+
+    const container = videoAnchor.closest("div, li, tr, section, article");
+    const channelAnchor = container
+      .find("a[href*='youtube.com/channel/'], a[href*='youtube.com/@'], a[href*='youtube.com/c/'], a[href*='youtube.com/user/']")
+      .first();
+
+    const channelName = channelAnchor.text().trim() || "Unknown Channel";
+    const channelUrl = channelAnchor.attr("href")?.trim();
+    const watchedAt = parseFirstDate(container.text());
+    if (!watchedAt) return;
+
+    rows.push({
+      title: `Watched ${decodeHtmlEntities(titleText)}`,
+      titleUrl,
+      time: watchedAt.toISOString(),
+      subtitles: [{ name: decodeHtmlEntities(channelName), url: channelUrl }],
+      sourceFormat: "html",
+    });
+  });
+
+  return rows;
+}
+
+async function parseZipInput(buffer: Buffer) {
+  const zip = await JSZip.loadAsync(buffer);
+  const names = Object.keys(zip.files).filter((name) => !zip.files[name]?.dir);
+
+  const preferredJson = names.find((name) => /watch-history.*\.json$/i.test(name));
+  const anyJson = preferredJson ?? names.find((name) => name.toLowerCase().endsWith(".json"));
+  if (anyJson) {
+    const text = await zip.files[anyJson].async("text");
+    return { data: JSON.parse(text), sourceName: anyJson };
+  }
+
+  const preferredHtml = names.find((name) => /watch-history.*\.html?$/i.test(name));
+  const anyHtml = preferredHtml ?? names.find((name) => /\.html?$/i.test(name));
+  if (anyHtml) {
+    const html = await zip.files[anyHtml].async("text");
+    return { data: htmlToWatchHistoryEntries(html), sourceName: anyHtml };
+  }
+
+  throw new Error("No watch-history JSON or HTML file found inside ZIP");
+}
+
+async function resolveImportInput(input: unknown, fallbackName?: string) {
+  const parsedEnvelope = importEnvelopeSchema.safeParse(input);
+
+  if (parsedEnvelope.success && parsedEnvelope.data.file) {
+    const file = parsedEnvelope.data.file;
+    const fileName = file.fileName;
+    const lower = fileName.toLowerCase();
+    const buffer = Buffer.from(file.contentBase64, "base64");
+
+    if (lower.endsWith(".zip") || file.mimeType?.includes("zip")) {
+      const parsedZip = await parseZipInput(buffer);
+      return {
+        data: parsedZip.data,
+        sourceName: parsedEnvelope.data.sourceName ?? parsedZip.sourceName,
+      };
+    }
+
+    const text = buffer.toString("utf8");
+
+    if (lower.endsWith(".html") || lower.endsWith(".htm") || file.mimeType?.includes("html")) {
+      return {
+        data: htmlToWatchHistoryEntries(text),
+        sourceName: parsedEnvelope.data.sourceName ?? fileName,
+      };
+    }
+
+    if (lower.endsWith(".json") || file.mimeType?.includes("json")) {
+      return {
+        data: JSON.parse(text),
+        sourceName: parsedEnvelope.data.sourceName ?? fileName,
+      };
+    }
+
+    try {
+      return {
+        data: JSON.parse(text),
+        sourceName: parsedEnvelope.data.sourceName ?? fileName,
+      };
+    } catch {
+      return {
+        data: htmlToWatchHistoryEntries(text),
+        sourceName: parsedEnvelope.data.sourceName ?? fileName,
+      };
+    }
+  }
+
+  if (parsedEnvelope.success && parsedEnvelope.data.data !== undefined) {
+    return {
+      data: parsedEnvelope.data.data,
+      sourceName: parsedEnvelope.data.sourceName ?? fallbackName ?? "youtube-history.json",
+    };
+  }
+
+  return {
+    data: input,
+    sourceName: fallbackName ?? "youtube-history.json",
+  };
+}
 
 export function normalizeYouTubeHistoryEntries(input: unknown): {
   valid: NormalizedWatchEvent[];
@@ -144,7 +308,8 @@ export function normalizeYouTubeHistoryEntries(input: unknown): {
 }
 
 export async function previewImport(input: unknown): Promise<ImportPreviewResult> {
-  const normalized = normalizeYouTubeHistoryEntries(input);
+  const resolved = await resolveImportInput(input);
+  const normalized = normalizeYouTubeHistoryEntries(resolved.data);
   const hashes = normalized.valid.map((v) => v.sourceEventHash);
 
   const existing = hashes.length
@@ -221,7 +386,8 @@ export async function upsertFtsForEvent(eventId: string) {
 }
 
 export async function commitImport(input: unknown, sourceName = "youtube-history.json") {
-  const normalized = normalizeYouTubeHistoryEntries(input);
+  const resolved = await resolveImportInput(input, sourceName);
+  const normalized = normalizeYouTubeHistoryEntries(resolved.data);
   const hashes = normalized.valid.map((v) => v.sourceEventHash);
   const existing = hashes.length
     ? await prisma.watchEvent.findMany({
@@ -233,7 +399,7 @@ export async function commitImport(input: unknown, sourceName = "youtube-history
 
   const importBatch = await prisma.importBatch.create({
     data: {
-      sourceName,
+      sourceName: resolved.sourceName,
       recordCount: normalized.recordCount,
       validCount: normalized.valid.length,
       invalidCount: normalized.errors.length,
