@@ -1,0 +1,10 @@
+{
+  "name": "My Life",
+  "description": "Universal personal timeline, journal, browsing history analyzer, Spotify and YouTube history analyzer, and interactive map tracker.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
