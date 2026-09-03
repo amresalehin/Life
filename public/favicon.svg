@@ -1,0 +1,258 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 860" width="100%" height="100%">
+  <defs>
+    <!-- Aurora Pink/Coral Gradients -->
+    <linearGradient id="auroraPink1" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#ffa6b9" />
+      <stop offset="35%" stop-color="#ff708e" />
+      <stop offset="70%" stop-color="#f43f5e" />
+      <stop offset="100%" stop-color="#e11d48" />
+    </linearGradient>
+
+    <linearGradient id="auroraPinkSoft" x1="0%" y1="20%" x2="100%" y2="80%">
+      <stop offset="0%" stop-color="#ffe4ea" stop-opacity="0.95" />
+      <stop offset="50%" stop-color="#ff85a1" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#fb7185" stop-opacity="0.75" />
+    </linearGradient>
+
+    <!-- Aurora Teal/Emerald Gradients -->
+    <linearGradient id="auroraTeal1" x1="10%" y1="0%" x2="90%" y2="100%">
+      <stop offset="0%" stop-color="#5eead4" />
+      <stop offset="40%" stop-color="#14b8a6" />
+      <stop offset="75%" stop-color="#0f766e" />
+      <stop offset="100%" stop-color="#134e4a" />
+    </linearGradient>
+
+    <linearGradient id="auroraTealDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d9488" />
+      <stop offset="60%" stop-color="#115e59" />
+      <stop offset="100%" stop-color="#042f2e" />
+    </linearGradient>
+
+    <!-- Dual Aurora Blend (Pink into Teal) -->
+    <linearGradient id="pinkToTeal" x1="30%" y1="0%" x2="70%" y2="100%">
+      <stop offset="0%" stop-color="#fda4af" />
+      <stop offset="35%" stop-color="#f43f5e" />
+      <stop offset="60%" stop-color="#2dd4bf" />
+      <stop offset="100%" stop-color="#0f766e" />
+    </linearGradient>
+
+    <linearGradient id="tealToPink" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#14b8a6" />
+      <stop offset="45%" stop-color="#2dd4bf" />
+      <stop offset="80%" stop-color="#fb7185" />
+      <stop offset="100%" stop-color="#ffe4e6" />
+    </linearGradient>
+
+    <!-- Soft Glow Filter for Ethereal Aura -->
+    <filter id="auroraGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="glow" />
+      <feMerge>
+        <feMergeNode in="glow" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="subtleGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="3" result="soft" />
+      <feMerge>
+        <feMergeNode in="soft" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Left-facing Aurora Portrait Group -->
+  <g id="aurora-portrait" transform="translate(40, 20)">
+
+    <!-- Background Ethereal Tendrils (Lower & Far Edge Waves) -->
+    <g opacity="0.65" filter="url(#auroraGlow)">
+      <!-- Far Left Outer Whisp drifting outward -->
+      <path d="M-15,420 C-25,480 30,520 85,550 C140,580 180,630 190,690 C170,680 130,640 90,600 C50,560 -20,530 -25,460 C-28,435 -20,410 -15,420 Z"
+            fill="url(#auroraTeal1)" />
+
+      <!-- Bottom Swirling Tail curving back under chin -->
+      <path d="M260,780 C320,830 400,850 440,840 C420,820 380,800 350,760 C320,720 290,660 250,620 C240,650 220,730 260,780 Z"
+            fill="url(#tealToPink)" />
+
+      <!-- Upper Right Cosmic Flare Crest -->
+      <path d="M600,100 C680,120 740,190 750,280 C755,330 720,380 670,410 C700,360 720,300 700,240 C680,180 620,130 560,95 C575,95 590,98 600,100 Z"
+            fill="url(#auroraPink1)" />
+
+      <!-- Right Edge Floating Droplet Curl -->
+      <path d="M640,430 C710,460 740,530 720,600 C700,640 660,670 630,650 C665,630 685,580 670,530 C655,480 620,450 640,430 Z"
+            fill="url(#auroraPinkSoft)" />
+    </g>
+
+    <!-- Midground Flowing Aurora Hair (Massive swirling volume) -->
+    <g filter="url(#subtleGlow)">
+      <!-- Top Crown Waves - Main Pink Plume (Flowing upward from forehead and sweeping right) -->
+      <path d="M260,180 C280,120 340,60 420,40 C500,20 580,50 630,100 C670,140 690,200 660,250 C630,220 620,160 570,120 C520,80 440,90 380,120 C340,140 310,180 290,210 C270,195 265,185 260,180 Z"
+            fill="url(#auroraPink1)" />
+
+      <!-- Secondary Crown Swirl (Lighter rose crest over the brow) -->
+      <path d="M180,240 C210,190 270,150 340,150 C410,150 460,180 500,230 C450,200 390,190 330,200 C270,210 220,240 180,280 C175,260 176,250 180,240 Z"
+            fill="url(#auroraPinkSoft)" opacity="0.9" />
+
+      <!-- Forward Forehead Crest (Pink wisp leaping out over the left profile) -->
+      <path d="M100,260 C130,230 180,220 230,230 C270,240 290,270 280,300 C260,280 230,270 190,275 C150,280 120,305 90,340 C85,320 88,285 100,260 Z"
+            fill="url(#auroraPink1)" />
+
+      <!-- Deep Center Wave (Transitioning from Rose to Teal) -->
+      <path d="M300,230 C360,240 420,270 470,320 C520,370 560,440 550,510 C530,460 500,410 450,370 C400,330 340,300 290,300 C290,270 295,245 300,230 Z"
+            fill="url(#pinkToTeal)" />
+
+      <!-- Massive Swirling Back Lock (Teal with Pink edges cascading behind head) -->
+      <path d="M480,340 C560,360 620,410 650,480 C680,550 670,630 630,700 C600,750 540,800 470,820 C520,770 560,710 570,640 C580,570 550,500 500,450 C460,410 410,380 370,370 C410,350 450,340 480,340 Z"
+            fill="url(#auroraTeal1)" />
+
+      <!-- Lower Neck & Jawline Swirl (Teal smoke curling under the face) -->
+      <path d="M190,560 C150,590 120,640 130,700 C140,750 180,780 230,790 C200,760 180,720 185,670 C190,620 220,590 260,570 C230,560 205,558 190,560 Z"
+            fill="url(#auroraTeal1)" />
+
+      <!-- Inner Whisp crossing behind the ear -->
+      <path d="M360,400 C430,420 480,470 490,540 C500,600 480,660 440,710 C465,655 465,595 440,540 C415,485 370,450 330,430 C340,415 350,405 360,400 Z"
+            fill="url(#auroraTealDark)" />
+
+      <!-- Delicate Pink Ribbon looping through the lower hair -->
+      <path d="M420,520 C480,540 530,590 540,660 C550,720 520,770 470,800 C505,755 515,700 495,650 C475,600 435,565 390,550 C400,535 410,525 420,520 Z"
+            fill="url(#auroraPinkSoft)" opacity="0.85" />
+    </g>
+
+    <!-- Foreground: Serene Human Face Profile in Glowing Emerald/Teal Mist -->
+    <g filter="url(#subtleGlow)">
+      <!-- Main Face Silhouette Base (Facing strictly LEFT) -->
+      <!-- Profile contour from Brow, Nose bridge, Nose tip, Philtrum, Lips, Chin, Jaw, Neck -->
+      <path d="
+        M 255,270
+        C 240,290 225,320 215,350
+        C 210,365 208,378 200,390
+        C 195,398 185,410 185,420
+        C 185,428 193,435 196,442
+        C 198,448 195,455 188,462
+        C 180,470 178,478 185,486
+        C 190,492 198,498 196,508
+        C 194,518 185,526 178,534
+        C 170,542 166,552 174,562
+        C 182,572 195,580 205,586
+        C 225,598 250,605 275,612
+        C 320,622 365,620 400,595
+        C 425,575 440,540 445,505
+        C 450,460 435,415 400,380
+        C 370,350 330,330 290,300
+        Z"
+        fill="url(#auroraTealDark)" />
+
+      <!-- Ethereal Facial Features & High-Contrast Glowing Contours -->
+
+      <!-- 1. Profile Outline Stroke (Nose, Lips, Chin, Jaw) in Luminous Cyan/Teal -->
+      <path d="
+        M 245,280
+        C 230,305 218,335 210,365
+        C 205,385 203,405 195,418
+        C 188,428 180,438 182,446
+        C 184,453 192,458 192,465
+        C 192,472 184,478 185,486
+        C 186,493 194,498 192,508
+        C 190,518 180,526 175,535
+        C 170,545 172,555 182,565
+        C 194,577 210,586 226,594
+        C 248,605 272,612 298,618
+        "
+        fill="none"
+        stroke="#5eead4"
+        stroke-width="5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        opacity="0.95" />
+
+      <!-- Inner Bright White Core on Nose Tip & Lip Apex -->
+      <path d="
+        M 197,412
+        C 188,425 180,436 182,445
+        C 184,452 191,456 191,463
+        C 191,470 184,476 185,484
+        "
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="2"
+        stroke-linecap="round"
+        opacity="0.9" />
+
+      <!-- 2. Closed Gentle Eye with Eyelash Flutter (Contemplative & Peaceful) -->
+      <g opacity="0.95">
+        <!-- Curved Eyelid Arc -->
+        <path d="M 235,410 C 248,420 262,423 278,416"
+              fill="none" stroke="#2dd4bf" stroke-width="4.5" stroke-linecap="round" />
+        <path d="M 237,410 C 248,419 261,422 276,416"
+              fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" />
+        <!-- Soft Downward Lash Whisps -->
+        <path d="M 248,421 L 246,428" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 258,422 L 257,430" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 268,420 L 268,427" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round" />
+      </g>
+
+      <!-- 3. Soft Brow Ridge Shadow & Highlight -->
+      <path d="M 220,365 C 240,360 265,365 285,378"
+            fill="none" stroke="#5eead4" stroke-width="3.5" opacity="0.6" stroke-linecap="round" />
+
+      <!-- 4. Subtle Mustache / Lip Nuance -->
+      <path d="M 188,474 C 196,478 208,480 220,477"
+            fill="none" stroke="#14b8a6" stroke-width="3" opacity="0.7" stroke-linecap="round" />
+
+      <!-- 5. Sculpted Ear with Glowing Shell Arc -->
+      <g opacity="0.9">
+        <!-- Outer Helix -->
+        <path d="M 380,430 C 410,420 430,440 430,470 C430,505 410,535 385,545 C 375,548 365,540 370,528 C 375,515 395,505 400,480 C 405,455 390,442 375,442"
+              fill="none" stroke="#2dd4bf" stroke-width="4" stroke-linecap="round" />
+        <!-- Inner Tragus / Concha -->
+        <path d="M 385,470 C 395,475 395,490 385,498"
+              fill="none" stroke="#5eead4" stroke-width="3" stroke-linecap="round" />
+        <path d="M 382,434 C 406,426 422,442 422,468"
+              fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.8" />
+      </g>
+
+      <!-- 6. Cheekbone & Jaw Luminous Shading -->
+      <path d="M 260,450 C 290,470 320,510 330,560"
+            fill="none" stroke="#2dd4bf" stroke-width="3" opacity="0.35" stroke-linecap="round" />
+
+      <!-- 7. Forehead Aurora Glow (Where skin dissolves into pink flame) -->
+      <path d="M 230,340 C 270,300 320,280 370,270"
+            fill="none" stroke="url(#auroraPinkSoft)" stroke-width="6" opacity="0.7" stroke-linecap="round" />
+    </g>
+
+    <!-- Floating Stardust / Aurora Embers & Sparkling Particles -->
+    <g filter="url(#subtleGlow)" opacity="0.85">
+      <!-- White Core Stars -->
+      <circle cx="210" cy="380" r="3" fill="#ffffff" />
+      <circle cx="150" cy="460" r="2.5" fill="#5eead4" />
+      <circle cx="120" cy="330" r="3" fill="#ffa6b9" />
+      <circle cx="95" cy="510" r="2.2" fill="#5eead4" />
+      <circle cx="170" cy="620" r="3" fill="#ffffff" />
+      <circle cx="240" cy="730" r="2.5" fill="#ffa6b9" />
+      <circle cx="340" cy="800" r="3.2" fill="#5eead4" />
+      <circle cx="490" cy="780" r="2.8" fill="#ffffff" />
+      <circle cx="610" cy="680" r="3" fill="#ffa6b9" />
+      <circle cx="670" cy="560" r="2.5" fill="#ffffff" />
+      <circle cx="710" cy="400" r="3.5" fill="#ffa6b9" />
+      <circle cx="690" cy="270" r="3" fill="#ffffff" />
+      <circle cx="620" cy="160" r="2.8" fill="#5eead4" />
+      <circle cx="480" cy="80" r="3.5" fill="#ffffff" />
+      <circle cx="370" cy="60" r="2.5" fill="#ffa6b9" />
+      <circle cx="280" cy="130" r="3.2" fill="#ffffff" />
+
+      <!-- Tiny Stardust Specs -->
+      <circle cx="190" cy="230" r="1.5" fill="#ffffff" />
+      <circle cx="310" cy="180" r="1.8" fill="#5eead4" />
+      <circle cx="440" cy="130" r="1.5" fill="#ffa6b9" />
+      <circle cx="560" cy="100" r="1.6" fill="#ffffff" />
+      <circle cx="650" cy="220" r="1.5" fill="#ffa6b9" />
+      <circle cx="590" cy="310" r="1.7" fill="#5eead4" />
+      <circle cx="530" cy="420" r="1.5" fill="#ffffff" />
+      <circle cx="450" cy="620" r="1.8" fill="#5eead4" />
+      <circle cx="380" cy="720" r="1.5" fill="#ffa6b9" />
+      <circle cx="280" cy="670" r="1.6" fill="#ffffff" />
+      <circle cx="150" cy="580" r="1.8" fill="#5eead4" />
+      <circle cx="70" cy="420" r="1.5" fill="#ffa6b9" />
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,699 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #fdfcf9;
+  --ink: #0f172a;
+  --ink-muted: #334155;
+  --ink-subtle: #475569;
+  --accent: #1e3a8a;
+  --accent-soft: #e0e7ff;
+  --border: rgba(15, 23, 42, 0.12);
+  --sidebar-w: 240px;
+
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
+.dark {
+  --bg: #121214;
+  --ink: #f8fafc;
+  --ink-muted: #cbd5e1;
+  --ink-subtle: #94a3b8;
+  --accent: #60a5fa;
+  --accent-soft: rgba(30, 58, 138, 0.28);
+  --border: rgba(255, 255, 255, 0.14);
+}
+
+.font-serif-editorial {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-mono-editorial {
+  font-family: 'Space Mono', monospace;
+}
+
+.editorial-panel {
+  border: 1px solid var(--border);
+  background: #ffffff;
+  box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.05);
+}
+
+.dark .editorial-panel {
+  border: 1px solid var(--border);
+  background: #18181b;
+  box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.4);
+}
+
+html {
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg);
+  color: var(--ink);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+body {
+  min-height: 100%;
+  min-height: 100dvh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Thin, overlay scrollbars to prevent layout jumping when zooming */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
+}
+
+.dark * {
+  scrollbar-color: rgba(75, 85, 99, 0.4) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.35);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.6);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.35);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.6);
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.ios-glass {
+  background-color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+.dark .ios-glass {
+  background-color: rgba(18, 18, 18, 0.68);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+.frosted-glass {
+  background-color: rgba(255, 255, 255, 0.52);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.dark .frosted-glass {
+  background-color: rgba(18, 18, 22, 0.52);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.35), inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.frosted-glass-card {
+  background-color: rgba(255, 255, 255, 0.52);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
+}
+
+.dark .frosted-glass-card {
+  background-color: rgba(24, 24, 28, 0.52);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================================================
+   Dynamic Shifting Living Gradients (Silky Fluid Gradients for All Views)
+   ========================================================================== */
+
+@keyframes dynamicGradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes orbDrift1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(50px, -40px) scale(1.12);
+  }
+  66% {
+    transform: translate(-40px, 35px) scale(0.92);
+  }
+}
+
+@keyframes orbDrift2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(-45px, 35px) scale(1.08);
+  }
+  66% {
+    transform: translate(40px, -30px) scale(0.94);
+  }
+}
+
+@keyframes orbDrift3 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(35px, 45px) scale(1.1);
+  }
+}
+
+.animate-orb-drift-1 {
+  animation: orbDrift1 14s ease-in-out infinite alternate;
+}
+
+.animate-orb-drift-2 {
+  animation: orbDrift2 18s ease-in-out infinite alternate;
+}
+
+.animate-orb-drift-3 {
+  animation: orbDrift3 16s ease-in-out infinite alternate;
+}
+
+/* 1. Browser View (Google Chrome 4-Color Swirl: Yellow, Red, Green, Blue) */
+.dynamic-bg-browser,
+.spectral-bg-browser {
+  background: linear-gradient(-45deg, #fef08a, #fee2e2, #dcfce7, #dbeafe, #fed7aa, #e0f2fe);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dark .dynamic-bg-browser,
+.dark .spectral-bg-browser {
+  background: linear-gradient(-45deg, #1c1404, #1f0709, #051a0e, #06152b, #1e1104, #0b1a2e);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+/* 2. YouTube View (Dynamic Crimson, Ruby, Sunset Amber) */
+.dynamic-bg-youtube,
+.spectral-bg-youtube {
+  background: linear-gradient(-45deg, #ffe4e6, #fef2f2, #ffedd5, #fce7f3, #fee2e2, #fff1f2);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dark .dynamic-bg-youtube,
+.dark .spectral-bg-youtube {
+  background: linear-gradient(-45deg, #180306, #2d0610, #3f0918, #1a040b, #3b071a, #22030d, #420a1c);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+/* 3. Spotify View (Dynamic Emerald, Jade Aurora, Neon Lime) */
+.dynamic-bg-spotify,
+.spectral-bg-spotify {
+  background: linear-gradient(-45deg, #dcfce7, #ccfbf1, #f0fdf4, #ecfdf5, #d1fae5, #e0f2fe);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dark .dynamic-bg-spotify,
+.dark .spectral-bg-spotify {
+  background: linear-gradient(-45deg, #02170c, #062716, #0c3622, #031b11, #0a3d27, #042415, #08432c);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+/* 4. Journal & Life View (Low-Poly Crystal Palette: Orange, Coral, Cyan, Royal Violet) */
+.dynamic-bg-journal,
+.spectral-bg-journal {
+  background: linear-gradient(-45deg, #ffedd5, #fce7f3, #e0e7ff, #ccfbf1, #ede9fe, #fee2e2);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 20s ease infinite;
+}
+
+.dark .dynamic-bg-journal,
+.dark .spectral-bg-journal {
+  background: linear-gradient(-45deg, #1f0a20, #0a1128, #051f24, #1a0826, #240e16, #0d1730);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 20s ease infinite;
+}
+
+/* 5. Map Timeline View (Topography Contour Elevation: Lime, Emerald, Gold Yellow, Terracotta, Deep Teal) */
+.dynamic-bg-maptimeline,
+.spectral-bg-maptimeline {
+  background: linear-gradient(-45deg, #dcfce7, #ecfccb, #fef08a, #ffedd5, #ccfbf1, #f3e8ff);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dark .dynamic-bg-maptimeline,
+.dark .spectral-bg-maptimeline {
+  background: linear-gradient(-45deg, #021a15, #0a2005, #1f1b03, #210d04, #12041c, #031821);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+/* 6. Notes & Diary View (Dynamic Molten Amber, Honey & Warm Bronze) */
+.dynamic-bg-notes,
+.spectral-bg-notes {
+  background: linear-gradient(-45deg, #fef3c7, #ffedd5, #fef9c3, #fed7aa, #fffbeb, #fef08a);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dark .dynamic-bg-notes,
+.dark .spectral-bg-notes {
+  background: linear-gradient(-45deg, #1c0f03, #2b1807, #3d220a, #1f1104, #44260b, #261405, #4d2a0e);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dynamic-gradient-dark {
+  background: linear-gradient(-45deg, #071926, #121035, #08222b, #1d0f36, #071e22, #141738);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dynamic-gradient-light {
+  background: linear-gradient(-45deg, #e0f2fe, #ede9fe, #ccfbf1, #e0e7ff, #fef3c7);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+/* Calming Multi-Color Hex Gradient for Journal & Life */
+@keyframes calmLifeGradientShift {
+  0% {
+    background-position: 0% 40%;
+  }
+  50% {
+    background-position: 100% 60%;
+  }
+  100% {
+    background-position: 0% 40%;
+  }
+}
+
+.journal-life-bg-dark {
+  background: linear-gradient(135deg, #0b1124 0%, #15102a 20%, #20132a 40%, #0d1e26 62%, #102420 80%, #1c152b 100%);
+  background-size: 300% 300%;
+  animation: calmLifeGradientShift 26s ease infinite;
+}
+
+.journal-life-bg-light {
+  background: linear-gradient(135deg, #f0f4ff 0%, #fbf1f8 25%, #f5f3ff 50%, #f0fdf9 75%, #fffbeb 100%);
+  background-size: 300% 300%;
+  animation: calmLifeGradientShift 26s ease infinite;
+}
+
+/* Journal Calming Overlays with Transparency & Backdrop Blur */
+.journal-card-overlay {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark .journal-card-overlay {
+  background: rgba(24, 24, 27, 0.65);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.journal-header-overlay {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark .journal-header-overlay {
+  background: rgba(24, 24, 27, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.journal-reflection-overlay {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dark .journal-reflection-overlay {
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Glass Frost theme utility classes */
+.glass-frost-spotify {
+  background: rgba(6, 26, 15, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(30, 215, 96, 0.22);
+}
+
+.glass-frost-youtube {
+  background: rgba(31, 7, 9, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(239, 68, 68, 0.22);
+}
+
+.glass-frost-browser {
+  background: rgba(8, 24, 38, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(6, 182, 212, 0.22);
+}
+
+.glass-frost-box {
+  background: rgba(4, 21, 48, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(0, 97, 213, 0.25);
+}
+
+.glass-frost-journal {
+  background: rgba(15, 12, 38, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(99, 102, 241, 0.22);
+}
+
+.glass-frost-maptimeline {
+  background: rgba(5, 18, 45, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(37, 99, 235, 0.22);
+}
+
+.glass-frost-notes {
+  background: rgba(36, 20, 6, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(245, 158, 11, 0.22);
+}
+
+.glass-frost-photos {
+  background: rgba(36, 10, 18, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(244, 63, 94, 0.22);
+}
+
+.glass-frost-bookmarks {
+  background: rgba(8, 20, 46, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(59, 130, 246, 0.22);
+}
+
+/* 7. Box Cloud View (Signature Box Blue & Deep Cerulean) */
+.dynamic-bg-box,
+.spectral-bg-box {
+  background: linear-gradient(-45deg, #dbeafe, #e0f2fe, #bae6fd, #cffafe, #e0e7ff, #dbeafe);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dark .dynamic-bg-box,
+.dark .spectral-bg-box {
+  background: linear-gradient(-45deg, #02122c, #031d47, #072a66, #04193d, #09388a, #031638, #052354);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+/* 8. Google Photos View (Dynamic Coral, Sunset Rose & Sunrise Gold) */
+.dynamic-bg-photos,
+.spectral-bg-photos {
+  background: linear-gradient(-45deg, #ffe4e6, #ffedd5, #fef3c7, #fee2e2, #fce7f3, #fff1f2);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dark .dynamic-bg-photos,
+.dark .spectral-bg-photos {
+  background: linear-gradient(-45deg, #1f080e, #2d0b16, #3d141f, #1a080f, #3b111e, #220b13, #421624);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+/* 9. Bookmarks & Collections View (Initially Pink & Sea Green, Adaptive by Service/Media) */
+.dynamic-bg-bookmarks,
+.spectral-bg-bookmarks,
+.dynamic-bg-bookmarks-pink-seagreen {
+  background: linear-gradient(-45deg, #fce7f3, #ccfbf1, #fbcfe8, #d1fae5, #fed7aa, #99f6e4);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dark .dynamic-bg-bookmarks,
+.dark .spectral-bg-bookmarks,
+.dark .dynamic-bg-bookmarks-pink-seagreen {
+  background: linear-gradient(-45deg, #1e0514, #031a12, #2a081d, #052419, #200615, #061e19);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+/* Pinterest Adaptive Red */
+.dynamic-bg-bookmarks-pinterest {
+  background: linear-gradient(-45deg, #ffe4e6, #fee2e2, #fff1f2, #fed7aa, #fce7f3);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dark .dynamic-bg-bookmarks-pinterest {
+  background: linear-gradient(-45deg, #240408, #3b0710, #4c0a15, #1f0307, #3d0812);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+/* mymind Adaptive Radiant Warm Orange */
+.dynamic-bg-bookmarks-mymind {
+  background: linear-gradient(-45deg, #ffedd5, #fef3c7, #ffedd5, #fee2e2, #fed7aa);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dark .dynamic-bg-bookmarks-mymind {
+  background: linear-gradient(-45deg, #240e02, #381604, #421b06, #1c0a01, #361403);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+/* GitHub Adaptive Obsidian & Violet */
+.dynamic-bg-bookmarks-github {
+  background: linear-gradient(-45deg, #ede9fe, #f5f3ff, #e0e7ff, #f3e8ff, #fae8ff);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+.dark .dynamic-bg-bookmarks-github {
+  background: linear-gradient(-45deg, #0f091f, #160d2e, #1c113b, #0a0614, #170e30);
+  background-size: 350% 350%;
+  animation: dynamicGradientShift 18s ease infinite;
+}
+
+/* Custom Leaflet Pin & Map Container Isolation */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+  isolation: isolate !important;
+  border-radius: inherit;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 10 !important;
+}
+
+.leaflet-pane {
+  z-index: 2 !important;
+}
+
+.leaflet-tile-pane {
+  z-index: 2 !important;
+}
+
+.leaflet-overlay-pane {
+  z-index: 4 !important;
+}
+
+.leaflet-shadow-pane {
+  z-index: 5 !important;
+}
+
+.leaflet-marker-pane {
+  z-index: 6 !important;
+}
+
+.leaflet-tooltip-pane {
+  z-index: 7 !important;
+}
+
+.leaflet-popup-pane {
+  z-index: 8 !important;
+}
+
+.leaflet-control {
+  z-index: 10 !important;
+}
+
+.leaflet-custom-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 2.5px solid #2563eb;
+  border-radius: 9999px;
+  color: #1e40af;
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+  transition: transform 0.15s ease;
+}
+
+.dark .leaflet-custom-pin {
+  background: #1e293b;
+  color: #60a5fa;
+  border-color: #3b82f6;
+}
+
+.leaflet-custom-pin:hover {
+  transform: scale(1.18);
+  z-index: 20 !important;
+}
+
+.leaflet-custom-pin-active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.45), 0 6px 16px rgba(0, 0, 0, 0.35) !important;
+  transform: scale(1.28) !important;
+  z-index: 30 !important;
+  animation: pulse-pin 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-pin {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.45), 0 6px 16px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.15), 0 8px 20px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Custom Marker Cluster Styling */
+.custom-marker-cluster {
+  background: transparent !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+
+.custom-marker-cluster:hover {
+  transform: scale(1.15);
+  z-index: 9999 !important;
+}
+
+.custom-marker-cluster-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(255, 255, 255, 0.9);
+  transition: all 0.2s ease;
+}
+
+.dark .custom-marker-cluster-inner {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(30, 41, 59, 0.95);
+}
+
+/* Cluster Sizes & Gradients */
+.cluster-small .custom-marker-cluster-inner {
+  width: 32px;
+  height: 32px;
+  font-size: 11px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.cluster-medium .custom-marker-cluster-inner {
+  width: 38px;
+  height: 38px;
+  font-size: 12px;
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+}
+
+.cluster-large .custom-marker-cluster-inner {
+  width: 44px;
+  height: 44px;
+  font-size: 13px;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+}
+
+.custom-marker-cluster-active .custom-marker-cluster-inner {
+  background: linear-gradient(135deg, #2563eb, #1e40af) !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.5), 0 6px 20px rgba(0, 0, 0, 0.45) !important;
+  animation: pulse-cluster 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-cluster {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.5), 0 6px 20px rgba(0, 0, 0, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(37, 99, 235, 0.2), 0 8px 24px rgba(0, 0, 0, 0.55);
+  }
+}
+

@@ -1,9 +1,7 @@
 {
-  "name": "My Life",
-  "description": "Universal personal timeline, journal, browsing history analyzer, Spotify and YouTube history analyzer, and interactive map tracker.",
-  "requestFramePermissions": [
-    "geolocation"
-  ],
+  "name": "Emreh",
+  "description": "Emreh — Personal life companion and fellow traveler (Hamrah / همراه) navigating daily timelines, journals, bookmarks, and memories.",
+  "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]
