@@ -248,6 +248,7 @@ export const PhotosView: React.FC<PhotosViewProps> = ({
   const handleGooglePhotosClick = async () => {
     setGooglePhotosError(null);
     setIsGooglePhotosPicking(true);
+    setIsMounting(true);
     setMountProgress(2);
     setMountStatus('Connecting to Google Photos…');
     try {
