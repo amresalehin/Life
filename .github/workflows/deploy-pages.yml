@@ -39,7 +39,10 @@ jobs:
           REPO_NAME="${GITHUB_REPOSITORY#*/}"
           OWNER="${GITHUB_REPOSITORY%%/*}"
 
-          if [ "$REPO_NAME" = "${OWNER}.github.io" ]; then
+          # A CNAME means the site is served from a custom domain at the root.
+          if [ -s CNAME ]; then
+            export BASE_PATH="/"
+          elif [ "$REPO_NAME" = "${OWNER}.github.io" ]; then
             export BASE_PATH="/"
           else
             export BASE_PATH="/${REPO_NAME}/"
