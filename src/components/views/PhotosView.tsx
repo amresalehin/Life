@@ -13,6 +13,7 @@ import {
   Layers,
   ChevronDown,
   HardDrive,
+  Cloud,
   CheckCircle2,
   Loader2,
   Trash2,
@@ -28,6 +29,8 @@ import {
   getDemoPhotos
 } from '../../utils/photosMountService';
 import { formatTime } from '../../utils/dataParser';
+import { pickGooglePhotos } from '../../utils/googlePhotosPicker';
+import { getStoredGoogleAccount, signInWithGoogle, signOutGoogle, type GoogleAccount } from '../../utils/googleSignIn';
 
 interface PhotosViewProps {
   photos: TimelineItem[];
@@ -58,6 +61,9 @@ export const PhotosView: React.FC<PhotosViewProps> = ({
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
   const [viewDensity, setViewDensity] = useState<'timeline' | 'grid' | 'compact'>('timeline');
   const [isMounting, setIsMounting] = useState(false);
+  const [isGooglePhotosPicking, setIsGooglePhotosPicking] = useState(false);
+  const [googlePhotosError, setGooglePhotosError] = useState<string | null>(null);
+  const [googleAccount, setGoogleAccount] = useState<GoogleAccount | null>(() => getStoredGoogleAccount());
   const [mountProgress, setMountProgress] = useState(0);
   const [mountStatus, setMountStatus] = useState('');
   const [isGearOpen, setIsGearOpen] = useState(false);
@@ -81,6 +87,14 @@ export const PhotosView: React.FC<PhotosViewProps> = ({
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isGearOpen]);
+
+  useEffect(() => {
+    const handleAccountChange = (event: Event) => {
+      setGoogleAccount((event as CustomEvent<GoogleAccount | null>).detail || null);
+    };
+    window.addEventListener('life-google-account-changed', handleAccountChange);
+    return () => window.removeEventListener('life-google-account-changed', handleAccountChange);
+  }, []);
 
   const folderInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -240,6 +254,35 @@ export const PhotosView: React.FC<PhotosViewProps> = ({
     }
   };
 
+
+  const handleGooglePhotosClick = async () => {
+    setGooglePhotosError(null);
+    setIsGooglePhotosPicking(true);
+    setIsMounting(true);
+    setMountProgress(2);
+    try {
+      let account = googleAccount;
+      if (!account) {
+        setMountStatus('Signing in with Google…');
+        account = await signInWithGoogle();
+        setGoogleAccount(account);
+      }
+
+      setMountStatus('Opening Google Photos…');
+      const items = await pickGooglePhotos(({ progress, status }) => {
+        setMountProgress(progress);
+        setMountStatus(status);
+      });
+      if (items.length > 0) onMountNewPhotos(items, 'Google Photos');
+      else setGooglePhotosError('No photos were selected.');
+    } catch (error) {
+      console.error('Google Photos flow failed:', error);
+      setGooglePhotosError(error instanceof Error ? error.message : 'Google sign-in or Google Photos could not be completed.');
+    } finally {
+      setIsGooglePhotosPicking(false);
+      setIsMounting(false);
+    }
+  };
   const handleLoadDemo = () => {
     const demo = getDemoPhotos();
     onMountNewPhotos(demo, 'Demo Google Photos');
@@ -383,6 +426,26 @@ export const PhotosView: React.FC<PhotosViewProps> = ({
             Source & Actions
           </span>
           <div className="flex flex-col gap-1.5">
+
+            <button
+              onClick={handleGooglePhotosClick}
+              disabled={isGooglePhotosPicking}
+              className="w-full px-3 py-2 bg-rose-500 hover:bg-rose-600 disabled:opacity-60 text-white rounded-xl text-xs font-semibold flex items-center justify-between shadow-xs transition-all cursor-pointer"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <Cloud className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{isGooglePhotosPicking ? 'Connecting…' : googleAccount ? 'Open Google Photos' : 'Continue with Google'}</span>
+              </div>
+              <span className="text-[10px] bg-white/15 px-1.5 py-0.5 rounded font-mono shrink-0">{googleAccount ? (googleAccount.email || 'Connected') : 'Sign in'}</span>
+            </button>
+            {googleAccount && (
+              <button
+                onClick={() => signOutGoogle()}
+                className="w-full px-3 py-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-lg text-[11px] font-medium text-left transition-colors cursor-pointer"
+              >
+                Sign out of Google
+              </button>
+            )}
             <button
               onClick={handleMountDirectoryClick}
               className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center justify-between shadow-xs transition-all cursor-pointer"
@@ -423,6 +486,14 @@ export const PhotosView: React.FC<PhotosViewProps> = ({
           </div>
         </div>
       </ViewToolbar>
+
+
+      {googlePhotosError && (
+        <div className="shrink-0 mx-6 mt-3 px-4 py-3 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-700 dark:text-rose-300 text-xs flex items-start justify-between gap-3">
+          <span>{googlePhotosError}</span>
+          <button onClick={() => setGooglePhotosError(null)} className="font-bold opacity-70 hover:opacity-100">×</button>
+        </div>
+      )}
 
       {/* Secondary People selector bar if people mode active */}
       {filterMode === 'people' && allPeople.length > 0 && (
