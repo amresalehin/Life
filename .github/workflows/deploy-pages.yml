@@ -51,8 +51,10 @@ jobs:
           echo "Building with BASE_PATH=$BASE_PATH"
           bun run build
 
-      - name: Create SPA fallback
-        run: cp dist/index.html dist/404.html
+      - name: Create SPA fallback and preserve custom domain
+        run: |
+          cp dist/index.html dist/404.html
+          if [ -s CNAME ]; then cp CNAME dist/CNAME; fi
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
