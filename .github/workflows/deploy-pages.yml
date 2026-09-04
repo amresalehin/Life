@@ -2,21 +2,17 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main, master]
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
@@ -25,30 +21,37 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: 1.2.21
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build production application
+      - name: Build for GitHub Pages
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
-          BASE_PATH: /${{ github.event.repository.name }}/
-        run: bun run build
-
-      - name: Configure SPA Fallback (404.html)
         run: |
-          if [ -f dist/index.html ] && [ ! -f dist/404.html ]; then
-            cp dist/index.html dist/404.html
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+
+          if [ "$REPO_NAME" = "${OWNER}.github.io" ]; then
+            export BASE_PATH="/"
+          else
+            export BASE_PATH="/${REPO_NAME}/"
           fi
 
-      - name: Setup Pages
+          echo "Building with BASE_PATH=$BASE_PATH"
+          bun run build
+
+      - name: Create SPA fallback
+        run: cp dist/index.html dist/404.html
+
+      - name: Configure Pages
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
