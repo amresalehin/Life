@@ -4,13 +4,17 @@ import path from 'path';
 import {defineConfig} from 'vite';
 import { boxVitePlugin } from './src/server/boxVitePlugin';
 
+const pagesOAuthPathPlugin = () => ({
+  name: 'github-pages-oauth-path',
+  transform(code: string, id: string) {
+    if (!id.endsWith('/src/components/views/BoxCloudView.tsx')) return null;
+    return code
+      .replaceAll('`${window.location.origin}/box-oauth-callback.html`', '`${window.location.origin}${import.meta.env.BASE_URL}box-oauth-callback.html`')
+      .replaceAll('Redirect URI: {window.location.origin}/box-oauth-callback.html', 'Redirect URI: {window.location.origin}{import.meta.env.BASE_URL}box-oauth-callback.html');
+  },
+});
+
 export default defineConfig(({ command }) => {
-  // Determine base path:
-  // In development (serve), keep '/' for local server routing
-  // In production (build):
-  // 1. Explicit BASE_PATH (e.g., '/Life/')
-  // 2. GITHUB_REPOSITORY (e.g., 'username/Life' -> '/Life/')
-  // 3. Fallback to './' for relative asset loading
   let basePath = '/';
   if (command === 'build') {
     if (process.env.BASE_PATH) {
@@ -28,17 +32,14 @@ export default defineConfig(({ command }) => {
 
   return {
     base: basePath,
-    plugins: [react(), tailwindcss(), boxVitePlugin()],
+    plugins: [react(), tailwindcss(), pagesOAuthPathPlugin(), boxVitePlugin()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
       },
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };
